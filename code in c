@@ -1,0 +1,111 @@
+
+
+
+#include<stdio.h>
+#include<unistd.h>
+#include<pthread.h>
+#include<stdlib.h>
+#include<stdio.h> 
+
+#define N 10 
+
+typedef struct 
+{ 
+      int person_id, arrival_time, burst_time, priority;
+      int q, ready; 
+}person_structure; 
+
+int Queue(int t1) 
+{ 
+      if(t1 == 0 || t1 == 1 || t1 == 2 || t1 == 3) 
+      { 
+            return 1; 
+      } 
+      else
+      {
+            return 2; 
+      }
+} 
+
+int main()
+{
+
+	{printf("Scene Illustration: \nTwo types of people can enter into a library-students and teachers. After entering the library, the visitor searches for the required books and get them. In ordr to get them issued, he goes to the single CPU which is there to process the issuing of books. Two types of queues are there at the counter-one for students and one for teachers.A student goes and stands at the tail of the queue for students and simliarly the teacher goes and stands at the tail of the queue for teaches (FIFO).If a student is being served and a teacher arrives at the counter, he would be the next person to get service (PRIORITY - non preemtive). If two teachers arrive at the same time, they will stand in their queue to get service (FIFO).\n If a teacher is being served and during the period when he is being served, another teacher comes, then that teacher would get the service next. This process might continue leading to increase in waiting time of students and the program times to minimise this.\n\n");
+	int limit, count, temp_person, time, j, y; 
+      person_structure temp; 
+      printf("Enter Total Number of Persons:\t"); 
+      scanf("%d", &limit);  
+      person_structure person[limit]; 
+      for(count = 0; count < limit; count++) 
+      { 
+            printf("\nPerson No (on basis of his arrival):\t"); 
+            scanf("%d", &person[count].person_id); 
+            printf("Arrival Time (on basis of his arrival with respect to his previous ):\t"); 
+            scanf("%d", &person[count].arrival_time); 
+	    person[count].burst_time=1; 
+            printf("Person Priority (1 for Student and 0 for teacher):\t"); 
+            scanf("%d", &person[count].priority); 
+            temp_person = person[count].priority; 
+            person[count].q = Queue(temp_person);
+            person[count].ready = 0; 
+      }
+      time = person[0].burst_time; 
+      for(y = 0; y < limit; y++) 
+      { 
+       for(count = y; count < limit; count++) 
+            { 
+                  if(person[count].arrival_time < time) 
+                  {
+                        person[count].ready = 1; 
+                  } 
+            } 
+            for(count = y; count < limit - 1; count++) 
+            {
+            for(j = count + 1; j < limit; j++) 
+                 { 
+                        if(person[count].ready == 1 && person[j].ready == 1) 
+                        { 
+                              if(person[count].q == 2 && person[j].q == 1) 
+                              { 
+                                    temp = person[count]; 
+                                    person[count] = person[j]; 
+                                    person[j] = temp; 
+                              } 
+                        } 
+                  } 
+            } 
+            for(count = y; count < limit - 1; count++) 
+            { 
+            for(j = count + 1; j < limit; j++) 
+                  {
+                        if(person[count].ready == 1 && person[j].ready == 1) 
+                        { 
+                              if(person[count].q == 1 && person[j].q == 1) 
+                              { 
+                                    if(person[count].burst_time > person[j].burst_time) 
+                                    { 
+                                          temp = person[count]; 
+                                          person[count] = person[j]; 
+                                          person[j] = temp; 
+                                    } 
+                                    else 
+                                    { 
+                                          break; 
+                                    } 
+                              } 
+                        } 
+                  } 
+            } 
+            printf("\nPerson[%d]:\tTime:\t%d To %d\n", person[y].person_id, time, time + person[y].burst_time); 
+            time = time + person[y].burst_time; 
+            for(count = y; count < limit; count++) 
+            { 
+                  if(person[count].ready == 1) 
+                  { 
+                        person[count].ready = 0; 
+                  } 
+            } 
+      } 
+	  } 
+
+}
